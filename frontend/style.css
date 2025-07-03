@@ -1,0 +1,90 @@
+
+
+
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    background: #f4f6f8;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 360px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.button-box {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+.button-box button {
+    width: 48%;
+    padding: 10px;
+    background: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.button-box button:hover {
+    background: #d5d5d5;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.app-name {
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.bottom-buttons {
+    margin-top: 25px;
+}
+
+.submit-btn:hover {
+    background: #0056b3;
+}
+
+.hidden {
+    display: none;
+}
+
