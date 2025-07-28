@@ -1,3 +1,7 @@
+Deployed : [http://20.39.209.157/ ](http://20.39.209.157/authenticate)
+on Azure using apache2 for reverese proxy
+
+
 ## Development Notes & Credits
 
 During the development and debugging of Hashtext, modern AI tools and prior project experience were leveraged to ensure robust and efficient solutions:
