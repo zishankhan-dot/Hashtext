@@ -1,57 +1,49 @@
 import React from 'react';
-//import "./index.css"
+import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+// import './dashboard.css';
+import axios from '../api/axiosInstance'; // Adjust the import based on your project structure
 
-function Dashboard() {
+const Dashboard = () => {
+  const [Number, setNumber] = useState(0);
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  
+  const handleCheckNumber= async (e) => {
+    e.preventDefault();
+    try { 
+      const response=await axios.get(`/User/checkNumber?PhoneNumber=${Number}`);
+      if(response.status === 200 && response.data.PublicKey) {
+        localStorage.setItem('receiverPhoneNumber', Number);
+        navigate('/messages');
+      } else {
+        setMessage('Phone number not registered. Please register first.');    
+      }
+    } catch (err) {
+      console.error('Error checking phone number:', err);
+      setMessage('An error occurred while checking the phone number.');
+    }
+  };
+
   return (
-<div>
-  <header>
-    <div class="logo">🥘 Handi Express</div>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Menu</a>
-      <a href="#">Orders</a>
-      <a href="#">Contact</a>
-    </nav>
-  </header>
+ <div className="dashboard-container">
 
-  <section class="hero">
-    <h1>Authentic Handi at Your Doorstep</h1>
-    <p>Freshly made, deeply flavoured—ready to eat!</p>
-  </section>
-
-  <section class="menu-grid">
-    <div class="dish">
-      <img src="images/chicken-handi.jpg" alt="Chicken Handi" />
-      <h2>Chicken Handi</h2>
-      <p>Rich tomato-based masala with tender chicken</p>
-      <span>€12.99</span>
+      <div className="main-content">
+        <h1>Check User by Phone Number</h1>
+        <form onSubmit={handleCheckNumber}>
+          <input
+            type="string"
+            placeholder="Enter Phone Number"
+            onChange={(e) => setNumber(e.target.value)}
+            required
+          />
+          <button type="submit">Message</button>
+        </form>
+        {message && <p className="status-message">{message}</p>}
+      </div>
     </div>
-    <div class="dish">
-      <img src="images/mutton-handi.jpg" alt="Mutton Handi" />
-      <h2>Mutton Handi</h2>
-      <p>Slow-cooked mutton in traditional spices</p>
-      <span>€14.99</span>
-    </div>
-    <div class="dish">
-      <img src="images/paneer-handi.jpg" alt="Paneer Handi" />
-      <h2>Paneer Handi</h2>
-      <p>Soft paneer in creamy handi sauce</p>
-      <span>€11.49</span>
-    </div>
-    <div class="dish">
-      <img src="images/veg-handi.jpg" alt="Mix Veg Handi" />
-      <h2>Mix Veg Handi</h2>
-      <p>Fresh veggies in mild yet flavorful curry</p>
-      <span>€10.99</span>
-    </div>
-  </section>
-
-  <footer>
-    <p>📞 0123-456-789 | 📍 Dublin, Ireland</p>
-    <p>&copy; 2025 Handi Express</p>
-  </footer>
-</div>
   );
-}
+};
 
 export default Dashboard;

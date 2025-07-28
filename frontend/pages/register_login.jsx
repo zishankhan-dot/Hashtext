@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {useNavigate} from 'react-router-dom'
 import './register_login.css'; // Adjust the path based on your project structure
+import { generateKey } from '../api/keygeneration';
 
 
 
@@ -21,15 +22,10 @@ const Register = () => {
   const handleRegister = async e => {
     e.preventDefault();
     try {
-      const response =await axios.post('/User/newUser',form);
-      console.log('Status:', response.status);
-      console.log('Data:', response.data);
-      console.log('Full response object:', response);
+      const response =await axios.post('/User/Register',form);
       setMessage('Please verify Otp !!')
       setuser("otp")
-      console.log(user);
       setotpsent(true)
-      console.log("Registration successful. Moving to OTP phase.");
 
     } catch (err) {
       console.error(err)
@@ -37,15 +33,20 @@ const Register = () => {
     }
   };
 
-  //post request to verify 6-digit otp 
+  //post request to verify 6-digit otp  and after verification creating keypair 
   const handleotp=async (e)=>{
     e.preventDefault();
     try{
-     await axios.post('/User/verifyotp',{otp:otpverify,PhoneNumber:form.PhoneNumber});
-      setMessage("Otp verified  successfully !!")
-      setuser("Login")
-      console.log("OTP verified. Moving to login.");
+      //verigying the give opt with the backend 
+     const otpRespone=await axios.post('/User/OtpVerify',{otp:otpverify,PhoneNumber:form.PhoneNumber});
+      /*creating rsa keypair using the generateKey function which will generate key-pair and 
+       save the privatekey in indexedDB while public key will be returned in Base64 format */
 
+       const Publickey = await generateKey();
+
+      const PublicKeyResponse= await axios.post('/User/SavePublicKey',{PublicKey:Publickey,PhoneNumber:form.PhoneNumber});
+      setMessage("Otp verified  successfully !! Public Key saved successfully.");
+      setuser("Login")
 
     }
     catch(err){

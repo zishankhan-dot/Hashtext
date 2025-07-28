@@ -27,8 +27,7 @@ we will be using random library to generate random 6 digit number and will send 
 
 export const Register=async (req,res)=>{
     const {Name,Email,PhoneNumber,Password,ConfirmPassword}=req.body;
-    console.log(req.body)
-    console.log(Name,Email,PhoneNumber,Password,ConfirmPassword);
+    
     const existingUser=await User.findOne({Email});
     if(!Password||!Email){
         return res.status(400).json({message:"Error Email or password"})
@@ -42,14 +41,11 @@ export const Register=async (req,res)=>{
         const newUser=new User({Name,Email,PhoneNumber,Password});
         //creating otp 
         const otp = random.generate({length:6,charset:'numeric'});
-        console.log(otp)
         const otpHashed=crypto.createHash('SHA256').update(otp).digest('hex');
-        console.log(otpHashed);
         //saving it 
         newUser.Otp=otpHashed;
         newUser.otp_expires= new Date(Date.now()+5*60*1000);
         const text=`OTP FOR HashText : ${otp}`;
-        console.log(text);
         //sending otp to mobile phone 
         await sendSms(PhoneNumber,text);
         await newUser.save();
@@ -74,9 +70,6 @@ export const VerifyOtp=async(req,res)=>{
            return  res.status(400).json({message:"UserDont Exist"})
         }
         const otpHashed = crypto.createHash('SHA256').update(otp).digest('hex');
-        console.log(otpHashed.toString())
-        console.log(new Date(Date.now()).toISOString());
-        console.log(new Date(isUser.otp_expires.getTime()).toISOString());
         if( isUser.otp_expires.getTime()<Date.now() || otpHashed.toString() !=isUser.Otp){
           return   res.status(400).json({message:"OTP INVALID OR EXPIRED"})
         
@@ -90,7 +83,7 @@ export const VerifyOtp=async(req,res)=>{
                 User:isUser._id,
                 Email:isUser.Email,
                 PhoneNumber:isUser.PhoneNumber},SECRETKEY,{expiresIn:'1h'});
-            res.cookie("auth",token,{maxAge:3600000});
+            res.cookie("authorization",token,{maxAge:3600000});
          return   res.status(200).json({ message: "OTP verified successfully", token });
 
 
@@ -107,12 +100,8 @@ export const Login=async (req,res)=>{
 
 // checking for user in User table 
    const isUser= await User.findOne({Email})
-   console.log(Password)
    if(!isUser){return res.status(402).json({message:"EMAIL NOT FOUND!!"})}
-   console.log(PEPPER)
-  console.log(isUser)
    const isPassword=await bcrypt.compare(PEPPER+Password.trim(), isUser.Password);
-   console.log(isPassword)
    if(!isPassword){return res.status(402).json({message:"PASSWORD INCORRECT!!"})}
    if(isUser.isphoneVerified !=true){return res.status(400).json({message:"FIRST VERIFY PHONENUMBER"})}
    const token=jwt.sign({
@@ -136,15 +125,12 @@ export const Login=async (req,res)=>{
 export const checkTokenShareUserDetail=(req,res,next)=>{
     const token=req.cookies.authorization;
     //checking cookie 
-    console.log(req.cookies);
     if(!token){
         return res.status(402).json({message:"token not found , login again!!!!"})
     }
     try{
        const decode= jwt.verify(token,SECRETKEY)
         req.userData=decode;
-        console.log("successfull verification !!");
-        console.log(decode)
         next();
     
     }
@@ -153,5 +139,75 @@ export const checkTokenShareUserDetail=(req,res,next)=>{
         return res.status(402).json({message:"failed token verification !! login again"})
          
          
+    }
+}
+
+//middleware to save public key from user 
+export const savepublicKey=async(req,res)=>{
+    const {PublicKey,PhoneNumber}=req.body;
+    if(!PublicKey || !PhoneNumber){
+        return res.status(400).json({message:"Please provide Public Key and Phone Number"});
+    }   
+    else{
+        try{
+            const user=await User.findOne({PhoneNumber});
+            if(!user){
+                return res.status(404).json({message:"User not found"});
+            }   
+            else{
+                user.publicKey=PublicKey;
+                await user.save();
+                return res.status(200).json({message:"Public Key saved successfully"});
+            }}
+            catch(err){
+                console.error("Error saving public key:", err);
+                return res.status(500).json({message:"Internal server error"});
+            }
+}
+}
+
+
+// middleware to get user by phone number
+export const getUserByPhoneNumber=async(req,res)=>{
+    var {PhoneNumber}=req.query;
+    PhoneNumber=PhoneNumber.trim();
+    PhoneNumber="+"+PhoneNumber;
+    if(!PhoneNumber){
+        return res.status(400).json({message:"Please provide Phone Number"});
+    }
+    try{
+        const user=await User.findOne({PhoneNumber});
+        if(!user){
+            return res.status(404).json({message:"User not found"});
+        }
+        else{
+            return res.status(200).json({
+                message:"User found",
+                PublicKey:user.publicKey
+            });
+        }
+    }
+    catch(err){
+        console.error("Error fetching user by phone number:", err);
+        return res.status(500).json({message:"Internal server error"});
+    }
+}
+
+
+//getting user phonenumber from previous middleware and returning public key for that user
+export const getUserByToken= async (req, res) => {
+    const userId = req.userData.userId; // getting user id from previous middleware
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.status(200).json({
+            message: "User found",
+            PublicKey: user.publicKey
+        });
+    } catch (err) {
+        console.error("Error fetching user by token:", err);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
