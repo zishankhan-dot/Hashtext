@@ -194,9 +194,8 @@ const Message = () => {
   };
 
   return (
-    <div>
-      <div>
-        <h2>Previous Messages</h2>
+    <div className="message-page" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="chat-card">
         <div className="message-list">
           {loading ? <p>Loading...</p> : (
             <ul>
@@ -204,11 +203,13 @@ const Message = () => {
                 .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp))
                 .map((msg, idx) => {
                   let label = 'Them';
+                  let liClass = 'them';
                   if (msg.senderNumber === senderPhoneNumber) {
                     label = 'You';
+                    liClass = 'you';
                   }
                   return (
-                    <li key={idx}>
+                    <li key={idx} className={liClass}>
                       <b>{label}:</b> {msg.text}
                       <span style={{ fontSize: '0.8em', color: '#888', marginLeft: 8 }}>
                         {msg.timestamp ? new Date(msg.timestamp).toLocaleString() : ''}
@@ -219,11 +220,13 @@ const Message = () => {
             </ul>
           )}
         </div>
+        <form onSubmit={handleSend}>
+          <input type="text" placeholder="Enter message" value={newMsg} onChange={e => setNewMsg(e.target.value)} required />
+          <button type="submit" aria-label="Send">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </form>
       </div>
-      <form onSubmit={handleSend}>
-        <input type="text" placeholder="Enter message" value={newMsg} onChange={e => setNewMsg(e.target.value)} required />
-        <button type="submit">SEND</button>
-      </form>
     </div>
   );
 };

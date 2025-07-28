@@ -4,25 +4,26 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(to bottom right, #fef8f2, #ffe5b4);
+  background: linear-gradient(135deg, #181c1f 0%, #232d31 100%);
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: #e0e0e0;
 }
 
 .container {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
-  background: #ffffff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #232d31;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
   text-align: center;
 }
 
 h2 {
   margin-bottom: 1rem;
-  color: #d2691e;
+  color: #25d366;
   font-weight: bold;
 }
 
@@ -37,13 +38,14 @@ input {
 
 input:focus {
   outline: none;
-  border-color: #ff8c00;
+  border-color: #25d366;
+  background: #232d31;
 }
 
 button {
   width: 90%;
-  background-color: #ff7f50;
-  color: white;
+  background-color: #25d366;
+  color: #181c1f;
   padding: 12px;
   margin-top: 10px;
   border: none;
@@ -54,7 +56,8 @@ button {
 }
 
 button:hover {
-  background-color: #e65c00;
+  background-color: #128c7e;
+  color: #fff;
 }
 
 .toggle-buttons {
@@ -65,19 +68,20 @@ button:hover {
 
 .toggle-buttons button {
   width: 48%;
-  background-color: #ffe4c4;
-  color: #333;
+  background-color: #181c1f;
+  color: #e0e0e0;
   border: 1px solid #ccc;
   font-size: 14px;
 }
 
 .toggle-buttons button:hover {
-  background-color: #ffd5a6;
+  background-color: #232d31;
+  color: #25d366;
 }
 
 .message {
   margin-top: 1rem;
-  color: #d2691e;
+  color: #25d366;
   font-weight: bold;
 }
 
