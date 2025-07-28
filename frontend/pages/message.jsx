@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from '../api/axiosInstance';
 import { get } from 'idb-keyval';
-
+import './message.css'
 
 
 // Helper function to import private key from base64
