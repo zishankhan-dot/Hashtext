@@ -14,9 +14,27 @@ dotenv.config();
 
 
 //cors  for frontend
+const allowedOrigins = [
+    'http://localhost:3000', // Local development HTTP
+    'https://localhost:3000', // Local development HTTPS
+    'http://127.0.0.1:3000', // Alternative localhost
+    'https://127.0.0.1:3000', // Alternative localhost HTTPS
+    process.env.FRONTEND_URL, // Production frontend URL from environment
+];
+
 express_api.use(cors({
-    origin: 'http://localhost:3000',
-  credentials: true
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, etc.)
+        if (!origin) return callback(null, true);
+        
+        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+        
+        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+    },
+    credentials: true
 }))
 
 
@@ -24,7 +42,21 @@ express_api.use(cors({
 express_api.use(express.json())
 express_api.use(cookieParser()); // for parsing cookies
 //Port from env
-const PORT=process.env.PORT
+const PORT=process.env.PORT || 3001
+
+// Trust proxy for Azure App Service
+express_api.set('trust proxy', 1);
+
+// Force HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+    express_api.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            res.redirect(`https://${req.header('host')}${req.url}`);
+        } else {
+            next();
+        }
+    });
+}
 
 
 //mongodb connection 
