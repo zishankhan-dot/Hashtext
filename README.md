@@ -1,5 +1,5 @@
-Deployed : [http://20.39.209.157/ ](http://20.39.209.157/authenticate)
-on Azure using apache2 for reverese proxy
+Deployed : https://172.187.193.53/authenticate
+on Azure vm using nginx and running on https using ssl certificates
 
 
 ## Development Notes & Credits

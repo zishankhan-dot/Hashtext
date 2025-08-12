@@ -6,6 +6,8 @@ import mongoose from 'mongoose';
 import userRouter from "./Routes/userRouter.js"
 import Messagesrouter from "./Routes/MessageRouter.js";
 import cookieParser from 'cookie-parser';
+import https from 'https';
+import fs from 'fs';
 
 
 //initiallizing 
@@ -72,7 +74,35 @@ express_api.use("/api/User",userRouter)
 express_api.use("/api/messages",Messagesrouter)
 
 
-//server
-express_api.listen(PORT,()=>{
-    console.log(`server error at ${PORT}`);
-})
+// Create HTTPS server for development
+const startServer = () => {
+    try {
+        // Check if SSL certificates exist
+        if (fs.existsSync('./ssl/cert.pem') && fs.existsSync('./ssl/key.pem')) {
+            const options = {
+                key: fs.readFileSync('./ssl/key.pem'),
+                cert: fs.readFileSync('./ssl/cert.pem')
+            };
+            
+            https.createServer(options, express_api).listen(PORT, () => {
+                console.log(`🔒 HTTPS Server running on port ${PORT}`);
+                console.log(`🌐 API available at: https://localhost:${PORT}/api`);
+            });
+        } else {
+            // Fallback to HTTP if certificates don't exist
+            express_api.listen(PORT, () => {
+                console.log(`🌐 HTTP Server running on port ${PORT}`);
+                console.log(`⚠️  Consider enabling HTTPS for production`);
+            });
+        }
+    } catch (error) {
+        console.error('Error starting server:', error);
+        // Fallback to HTTP
+        express_api.listen(PORT, () => {
+            console.log(`🌐 HTTP Server running on port ${PORT} (HTTPS failed)`);
+        });
+    }
+};
+
+// Start the server
+startServer();
