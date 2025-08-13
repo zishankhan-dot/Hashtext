@@ -1,3 +1,5 @@
+ATTACK REPORT LINK : https://docs.google.com/document/d/1voifAzPWm1P7PNq5dYQ6tNmKpg4Io6NITTk27NEq3sQ/edit?usp=sharing
+
 Deployed : https://172.187.193.53/authenticate
 on Azure vm using nginx and running on https using ssl certificates
 
